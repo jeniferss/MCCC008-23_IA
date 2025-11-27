@@ -1,0 +1,16 @@
+[project]
+name = "personIA"
+version = "0.1.0"
+description = "API para análise de traços de personalidade de personagens a partir de trechos de livros"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "fastapi[standard]>=0.122.0",
+    "jinja2>=3.1.6",
+    "joblib>=1.4.2",
+    "pydantic-settings>=2.7.0",
+    "python-multipart>=0.0.9",
+    "ruff>=0.14.6",
+    "scikit-learn>=1.6.0",
+    "uvicorn>=0.38.0",
+]
