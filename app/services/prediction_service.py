@@ -1,12 +1,12 @@
 import json
 import logging
 import re
+import unicodedata
 
 import joblib
 import numpy as np
-import unicodedata
 
-from app.core.config.settings import settings
+from core.config.settings import settings
 
 logger = logging.getLogger(__name__)
 

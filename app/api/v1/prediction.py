@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 
-from app.schemas.prediction import TextInput, PredictionResponse
-from app.services.prediction_service import predict_traits_snippet2
+from schemas.prediction import TextInput, PredictionResponse
+from services.prediction_service import predict_traits_snippet2
 
 router = APIRouter()
 

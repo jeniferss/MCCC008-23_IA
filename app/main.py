@@ -4,7 +4,7 @@ from fastapi import FastAPI, Request
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
-from app.api.v1 import prediction
+from api.v1 import prediction
 
 app = FastAPI(
     title="personIA",
