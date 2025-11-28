@@ -1,19 +1,13 @@
 import json
-import logging
 import os
 import re
 import tempfile
 
-import unicodedata
-
-import requests
-
 import joblib
 import numpy as np
-
+import requests
+import unicodedata
 from core.config.settings import settings
-
-logger = logging.getLogger(__name__)
 
 
 def _normalize_text(text: str) -> str:
@@ -26,13 +20,12 @@ def _normalize_text(text: str) -> str:
 
 def predict_traits_snippet2(
         snippet: str,
-        max_k: int = 3,
-        model_path: str = settings.BASE_DIR / "data" / "modelo_traits.joblib",
+        max_k: int = 2,
         labels_path: str = settings.BASE_DIR / "data" / "traits_labels.json",
         thresholds_path: str = settings.BASE_DIR / "data" / "traits_thresholds.npy",
 ):
     url = "https://github.com/jeniferss/MCCC008-23_IA/raw/master/app/data/modelo_traits.joblib"
-    response = requests.get(url, timeout=30)
+    response = requests.get(url, timeout=60)
     response.raise_for_status()
 
     with tempfile.NamedTemporaryFile(delete=False, suffix='.joblib') as tmp_file:
@@ -42,23 +35,23 @@ def predict_traits_snippet2(
 
     os.unlink(tmp_path)
 
-    thresh = np.load(thresholds_path)
     with open(labels_path, "r", encoding="utf-8") as f:
         label_names = json.load(f)
 
+    thresh = np.load(thresholds_path)
     if len(thresh) != len(label_names):
         thresh = np.array([0.5] * len(label_names))
 
     PENALTY = {
-        "determinado": 0.6,
-        "observador": 0.55,
-        "gentil": 0.65
-    }
-
-    CUSTOM_THRESH = {
-        "determinado": 0.28,
-        "observador": 0.30,
-        "gentil": 0.26
+        "determinado": 0.7,
+        "observador": 0.9,
+        "gentil": 0.65,
+        "bondoso": 0.6,
+        "responsável": 0.3,
+        "controlador": 0.3,
+        "inteligente": 0.7,
+        "precavido": 0.4,
+        "racional": 0.8
     }
 
     snippet_clean = _normalize_text(snippet)
@@ -70,9 +63,6 @@ def predict_traits_snippet2(
     for i, lab in enumerate(label_names):
         p = float(probs[i])
         t = float(thresh[i])
-
-        if lab in CUSTOM_THRESH:
-            t = CUSTOM_THRESH[lab]
 
         if lab in PENALTY:
             p = p * PENALTY[lab]

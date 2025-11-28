@@ -8,4 +8,3 @@ class TextInput(BaseModel):
 class PredictionResponse(BaseModel):
     labels: list[str]
     scores: dict[str, float]
-
