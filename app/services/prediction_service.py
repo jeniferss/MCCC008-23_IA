@@ -1,7 +1,12 @@
 import json
 import logging
+import os
 import re
+import tempfile
+
 import unicodedata
+
+import requests
 
 import joblib
 import numpy as np
@@ -19,37 +24,6 @@ def _normalize_text(text: str) -> str:
     return text.strip()
 
 
-def predict_traits_snippet(
-        snippet: str,
-        model_path: str = settings.BASE_DIR / "data" / "modelo_traits.joblib",
-        labels_path: str = settings.BASE_DIR / "data" / "traits_labels.json",
-        thresholds_path: str = settings.BASE_DIR / "data" / "traits_thresholds.npy",
-        top_k: int | None = None,
-):
-    model = joblib.load(model_path)
-    thresholds = np.load(thresholds_path)
-    with open(labels_path, "r", encoding="utf-8") as f:
-        label_names = json.load(f)
-
-    snippet_clean = _normalize_text(snippet)
-    probs = model.predict_proba([snippet_clean])[0]
-    if top_k is not None:
-        k = min(int(top_k), len(probs))
-        idx = np.argsort(probs)[::-1][:k]
-        selected_labels = [label_names[i] for i in idx]
-        probs_by_label = {label_names[i]: float(probs[i]) for i in idx}
-
-    else:
-        idx = np.where(probs >= thresholds)[0]
-        selected_labels = [label_names[i] for i in idx]
-        probs_by_label = {label_names[i]: float(probs[i]) for i in idx}
-
-    return {
-        "labels": selected_labels,
-        "scores": probs_by_label,
-    }
-
-
 def predict_traits_snippet2(
         snippet: str,
         max_k: int = 3,
@@ -57,7 +31,17 @@ def predict_traits_snippet2(
         labels_path: str = settings.BASE_DIR / "data" / "traits_labels.json",
         thresholds_path: str = settings.BASE_DIR / "data" / "traits_thresholds.npy",
 ):
-    model = joblib.load(model_path)
+    url = "https://github.com/jeniferss/MCCC008-23_IA/raw/master/app/data/modelo_traits.joblib"
+    response = requests.get(url, timeout=30)
+    response.raise_for_status()
+
+    with tempfile.NamedTemporaryFile(delete=False, suffix='.joblib') as tmp_file:
+        tmp_file.write(response.content)
+        tmp_path = tmp_file.name
+        model = joblib.load(tmp_path)
+
+    os.unlink(tmp_path)
+
     thresh = np.load(thresholds_path)
     with open(labels_path, "r", encoding="utf-8") as f:
         label_names = json.load(f)
