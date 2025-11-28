@@ -5,7 +5,8 @@ import re
 import joblib
 import numpy as np
 import unicodedata
-from core.config.settings import settings
+
+from app.core.config.settings import settings
 
 logger = logging.getLogger(__name__)
 
