@@ -1,7 +1,8 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter
 
 from schemas.prediction import TextInput, PredictionResponse
-from services.prediction_service import PredictionService, get_prediction_service
+
+from services.prediction_service import predict_traits_snippet, predict_traits_snippet2
 
 router = APIRouter()
 
@@ -9,17 +10,11 @@ router = APIRouter()
 @router.post("/analyze", response_model=PredictionResponse)
 async def analyze_character(
         text_input: TextInput,
-        service: PredictionService = Depends(get_prediction_service)
 ):
     text = text_input.text
-    result = service.predict(text)
+    result = predict_traits_snippet2(snippet=text)
 
     return PredictionResponse(
         labels=result["labels"],
         scores=result["scores"]
     )
-
-
-@router.get("/model-info")
-async def get_model_info(service: PredictionService = Depends(get_prediction_service)):
-    return service.get_model_info()

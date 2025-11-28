@@ -4,7 +4,7 @@ from pydantic_settings import BaseSettings
 
 class Settings(BaseSettings):
     BASE_DIR: Path = Path(__file__).resolve().parent.parent.parent
-    MODEL_PATH: str = "data/traits_pipeline.joblib"
+    MODEL_PATH: str = "data/modelo_traits.joblib"
 
     API_V1_PREFIX: str = "/api/v1"
     PROJECT_NAME: str = "personIA"
